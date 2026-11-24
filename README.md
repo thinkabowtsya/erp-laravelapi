@@ -1,4 +1,4 @@
-# ERP API — Backend Sistem Distribusi & Penjualan
+# ERP API — Distribution & Sales Management Backend
 
 ![PHP](https://img.shields.io/badge/PHP-7.3%20%7C%208.x-777BB4?logo=php&logoColor=white)
 ![Laravel](https://img.shields.io/badge/Laravel-8.x-FF2D20?logo=laravel&logoColor=white)
@@ -6,185 +6,185 @@
 ![Passport](https://img.shields.io/badge/Auth-Laravel%20Passport-blue)
 ![WebSockets](https://img.shields.io/badge/Realtime-WebSockets-green)
 
-RESTful API berbasis **Laravel 8** yang menjadi backend sebuah aplikasi **ERP (Enterprise Resource Planning)** untuk usaha distribusi/perdagangan. API ini menangani seluruh siklus bisnis: mulai dari pesanan pelanggan, pembelian ke supplier, penjualan, retur, manajemen stok dan HPP, hingga hutang-piutang dan pelaporan keuangan.
+A RESTful API built with **Laravel 8** that powers an **ERP (Enterprise Resource Planning)** application for a distribution/trading business. It covers the entire business cycle: customer orders, purchasing from suppliers, sales, returns, inventory and COGS (HPP) management, accounts payable/receivable, and financial reporting.
 
 ---
 
-## Daftar Isi
+## Table of Contents
 
-- [Fitur Utama](#fitur-utama)
-- [Alur Bisnis](#alur-bisnis)
+- [Key Features](#key-features)
+- [Business Flow](#business-flow)
 - [Tech Stack](#tech-stack)
-- [Arsitektur & Struktur Folder](#arsitektur--struktur-folder)
-- [Keamanan & Hak Akses](#keamanan--hak-akses)
-- [Instalasi](#instalasi)
-- [Contoh Endpoint](#contoh-endpoint)
-- [Pengujian](#pengujian)
-- [Pengembang](#pengembang)
+- [Architecture & Folder Structure](#architecture--folder-structure)
+- [Security & Access Control](#security--access-control)
+- [Installation](#installation)
+- [Sample Endpoints](#sample-endpoints)
+- [Testing](#testing)
+- [Author](#author)
 
 ---
 
-## Fitur Utama
+## Key Features
 
 ### Master Data
-| Modul | Keterangan |
+| Module | Description |
 |---|---|
-| Customer & Group Customer | Data pelanggan beserta pengelompokannya |
-| Supplier | Data pemasok |
-| Product, Group Product, Satuan | Katalog produk, kategori, dan satuan |
-| Karyawan & Armada | Data karyawan dan kendaraan pengiriman |
-| Bank & Alat Bayar | Rekening dan metode pembayaran |
-| Perkiraan (COA) | Chart of Accounts untuk pencatatan keuangan |
-| Owner, Parameter, Hari Libur | Konfigurasi umum sistem |
+| Customer & Customer Group | Customer records and their grouping |
+| Supplier | Supplier records |
+| Product, Product Group, Unit | Product catalog, categories, and units of measure |
+| Employee & Fleet | Employee and delivery vehicle records |
+| Bank & Payment Method | Bank accounts and payment methods |
+| Chart of Accounts | Account structure for financial records |
+| Owner, Parameter, Holiday | General system configuration |
 
-### Transaksi
-- **Pesanan** — pencatatan pesanan pelanggan (header–detail).
-- **Pesanan Final & Cek Pesanan** — rekap pesanan final yang menjadi dasar pembelian dan penjualan, termasuk cetak *surat pengantar barang*.
-- **Pembelian** — pembelian barang ke supplier, termasuk cek stok produk dan transaksi belanja.
-- **Penjualan** — penjualan ke pelanggan, cetak *invoice*, dan laporan profit (ringkas maupun detail).
-- **Faktur Pembelian & Faktur Penjualan**.
-- **Retur Beli & Retur Jual** — dengan validasi qty maksimal yang boleh diretur.
-- **Penyesuaian Stok** — koreksi stok fisik.
-- **Transaksi Armada & Transaksi Belanja** — biaya operasional kendaraan dan belanja harian.
+### Transactions
+- **Orders** — customer order entry (header–detail).
+- **Final Orders & Order Check** — consolidated final orders that drive purchasing and sales, including printable *delivery notes*.
+- **Purchasing** — purchasing goods from suppliers, with product stock checks and daily shopping transactions.
+- **Sales** — sales to customers, *invoice* printing, and profit reports (summary and detailed).
+- **Purchase & Sales Invoices**.
+- **Purchase Returns & Sales Returns** — with validation of the maximum returnable quantity.
+- **Stock Adjustment** — physical stock corrections.
+- **Fleet & Shopping Transactions** — vehicle operating costs and daily expenses.
 
-### Keuangan
-- **Hutang & Pelunasan Hutang** ke supplier.
-- **Piutang & Pelunasan Piutang** dari pelanggan.
+### Finance
+- **Accounts Payable & Payable Settlement** to suppliers.
+- **Accounts Receivable & Receivable Settlement** from customers.
 
-### Persediaan
-- **Kartu Stok** — riwayat keluar-masuk barang per produk.
-- **HPP (Harga Pokok Penjualan)** — perhitungan HPP dari pembelian, penjualan, dan retur.
+### Inventory
+- **Stock Card** — per-product history of stock movements.
+- **COGS (HPP)** — cost of goods sold calculated from purchases, sales, and returns.
 
-### Sistem & Administrasi
-- Manajemen **User, Role, Menu, ACL/ACOS** (hak akses per role maupun per user).
-- **Log Trail** — audit trail setiap perubahan data (header & detail).
-- **Dashboard**, **Error log**, ubah & lupa password (reset via email).
-- **Running Number** — penomoran dokumen transaksi otomatis per grup/sub-grup dan periode.
-- **Export Excel & Report** di hampir setiap modul (PhpSpreadsheet).
-- **Notifikasi real-time** untuk transaksi pembelian & penjualan melalui WebSockets.
+### System & Administration
+- Management of **Users, Roles, Menus, and ACL/ACOs** (permissions per role and per user).
+- **Audit Trail** — records every data change (header & detail).
+- **Dashboard**, **error log**, change password, and forgot password (email reset).
+- **Running Number** — automatic document numbering by group/sub-group and period.
+- **Excel export & reports** for nearly every module (PhpSpreadsheet).
+- **Real-time notifications** for purchase and sales transactions via WebSockets.
 
 ---
 
-## Alur Bisnis
+## Business Flow
 
 ```
- Pesanan ──► Pesanan Final ──┬──► Pembelian ──► Hutang ──► Pelunasan Hutang
-                             │        │
-                             │        └──► Retur Beli
-                             │
-                             └──► Penjualan ──► Piutang ──► Pelunasan Piutang
-                                      │
-                                      ├──► Invoice / Surat Pengantar Barang
-                                      └──► Retur Jual
+ Order ──► Final Order ──┬──► Purchase ──► Payable ──► Payable Settlement
+                         │        │
+                         │        └──► Purchase Return
+                         │
+                         └──► Sale ──► Receivable ──► Receivable Settlement
+                                  │
+                                  ├──► Invoice / Delivery Note
+                                  └──► Sales Return
 
- Pembelian / Penjualan / Retur / Penyesuaian Stok ──► Kartu Stok ──► HPP ──► Laporan Profit
+ Purchase / Sale / Returns / Stock Adjustment ──► Stock Card ──► COGS ──► Profit Report
 ```
 
 ---
 
 ## Tech Stack
 
-| Kategori | Teknologi |
+| Category | Technology |
 |---|---|
-| Bahasa | PHP 7.3+ / 8.x |
+| Language | PHP 7.3+ / 8.x |
 | Framework | Laravel 8 |
 | Database | MySQL / MariaDB |
-| Autentikasi | Laravel Passport (OAuth2), Laravel Sanctum |
+| Authentication | Laravel Passport (OAuth2), Laravel Sanctum |
 | Real-time | `beyondcode/laravel-websockets`, Pusher protocol |
-| Export / Laporan | `phpoffice/phpspreadsheet` |
-| Lainnya | Intervention Image, Guzzle HTTP, Doctrine DBAL, Laravel CORS |
+| Export / Reports | `phpoffice/phpspreadsheet` |
+| Others | Intervention Image, Guzzle HTTP, Doctrine DBAL, Laravel CORS |
 | Testing | PHPUnit, Paratest, Mockery, Faker |
 
 ---
 
-## Arsitektur & Struktur Folder
+## Architecture & Folder Structure
 
 ```
 erp-api/
 ├── app/
-│   ├── Console/              # Kernel artisan & scheduler
-│   ├── Events/               # Event broadcast (notifikasi pembelian/penjualan, progres export)
+│   ├── Console/              # Artisan kernel & scheduler
+│   ├── Events/               # Broadcast events (purchase/sales notifications, export progress)
 │   ├── Exceptions/           # Global exception handler
-│   ├── Helpers/              # Fungsi helper global (autoload via composer)
+│   ├── Helpers/              # Global helper functions (autoloaded via Composer)
 │   ├── Http/
-│   │   ├── Controllers/Api/  # ±60 controller REST, satu per modul
-│   │   ├── Middleware/       # Authorized (cek ACL), HandleTokenExpiration, dll.
+│   │   ├── Controllers/Api/  # ~60 REST controllers, one per module
+│   │   ├── Middleware/       # Authorized (ACL check), HandleTokenExpiration, etc.
 │   │   └── Requests/         # Form Request validation (Store/Update/Destroy)
-│   ├── Mail/                 # Email reset password
-│   ├── Models/               # Eloquent model + query builder grid (filter, sort, paging)
-│   ├── Providers/            # Service provider (Auth, Broadcast, Route, dll.)
+│   ├── Mail/                 # Password reset email
+│   ├── Models/               # Eloquent models + grid query builders (filter, sort, paging)
+│   ├── Providers/            # Service providers (Auth, Broadcast, Route, etc.)
 │   ├── Rules/                # Custom validation rules
-│   ├── Services/             # RunningNumberService (penomoran dokumen)
-│   └── Traits/               # RestrictDeletion (mencegah hapus data yang sudah dipakai)
-├── config/                   # Konfigurasi Laravel + integrasi API eksternal
-├── cronjob/                  # Script terjadwal (dipanggil via Task Scheduler / cron)
+│   ├── Services/             # RunningNumberService (document numbering)
+│   └── Traits/               # RestrictDeletion (prevents deleting referenced records)
+├── config/                   # Laravel configuration + external API integration
+├── cronjob/                  # Scheduled scripts (run via Task Scheduler / cron)
 ├── database/
-│   ├── migrations/           # 60+ migration skema tabel
+│   ├── migrations/           # 60+ schema migrations
 │   ├── factories/
-│   └── seeders/              # Seeder master data, menu, role & ACL
+│   └── seeders/              # Master data, menu, role & ACL seeders
 ├── routes/
-│   ├── api.php               # Seluruh endpoint REST API
-│   └── channels.php          # Otorisasi channel broadcasting
-├── tests/Feature/Api/        # Feature test endpoint API
-└── public/                   # Entry point aplikasi
+│   ├── api.php               # All REST API endpoints
+│   └── channels.php          # Broadcast channel authorization
+├── tests/Feature/Api/        # API feature tests
+└── public/                   # Application entry point
 ```
 
-### Pola yang Digunakan
-- **Header–Detail pattern** untuk dokumen transaksi (mis. `PenjualanHeader` + `PenjualanDetail`), sehingga satu dokumen dapat memiliki banyak baris item.
-- **Form Request Validation** terpisah untuk create, update, dan delete.
-- **Grid endpoint standar** di setiap modul: pencarian, filter per kolom, sorting, dan pagination di sisi server.
-- **Endpoint pendukung** yang konsisten: `/default` (nilai awal form), `/field_length` (panjang field untuk validasi di frontend), `/combo`, `/export`, `/report`.
-- **Database transaction** pada proses simpan transaksi untuk menjaga konsistensi data.
-- **Audit trail** otomatis ke tabel `logtrail` untuk setiap perubahan.
+### Design Patterns
+- **Header–Detail pattern** for transaction documents (e.g. `PenjualanHeader` + `PenjualanDetail`), so a single document can hold many line items.
+- **Form Request Validation**, separated for create, update, and delete.
+- **Standardized grid endpoints** in every module: server-side search, per-column filtering, sorting, and pagination.
+- **Consistent supporting endpoints**: `/default` (form defaults), `/field_length` (field lengths for frontend validation), `/combo`, `/export`, `/report`.
+- **Database transactions** when saving documents to keep data consistent.
+- **Automatic audit trail** written to the `logtrail` table on every change.
 
 ---
 
-## Keamanan & Hak Akses
+## Security & Access Control
 
-1. **Autentikasi OAuth2** menggunakan Laravel Passport — client mendapatkan token melalui `POST /api/token`.
-2. **Middleware `auth:api`** melindungi seluruh endpoint transaksi.
-3. **Middleware `Authorized`** memeriksa izin berdasarkan kombinasi *class* (modul) dan *method* (aksi) terhadap tabel ACL milik role maupun user, lalu mengembalikan `403` bila tidak berhak.
-4. **HandleTokenExpiration** untuk menangani token yang kedaluwarsa.
-5. **RestrictDeletion** mencegah penghapusan master data yang masih direferensikan oleh transaksi.
+1. **OAuth2 authentication** with Laravel Passport — clients obtain a token via `POST /api/token`.
+2. **`auth:api` middleware** protects all transactional endpoints.
+3. **`Authorized` middleware** checks permissions based on the *class* (module) and *method* (action) against role and user ACL tables, returning `403` when access is denied.
+4. **HandleTokenExpiration** handles expired tokens.
+5. **RestrictDeletion** prevents deleting master data that is still referenced by transactions.
 
 ---
 
-## Instalasi
+## Installation
 
-### Prasyarat
-- PHP 7.3+ dengan ekstensi `pdo_mysql`, `gd`, `zip`, `mbstring`
+### Requirements
+- PHP 7.3+ with the `pdo_mysql`, `gd`, `zip`, and `mbstring` extensions
 - Composer
 - MySQL 5.7+ / MariaDB 10.3+
 
-### Langkah
+### Steps
 
 ```bash
-# 1. Clone repository
+# 1. Clone the repository
 git clone https://github.com/thinkabowtsya/erp-laravelapi.git
 cd erp-laravelapi
 
-# 2. Install dependency
+# 2. Install dependencies
 composer install
 
-# 3. Salin file environment lalu sesuaikan koneksi database
+# 3. Copy the environment file and configure the database connection
 cp .env.example .env
 php artisan key:generate
 
-# 4. Jalankan migrasi & seeder
+# 4. Run migrations & seeders
 php artisan migrate --seed
 
-# 5. Generate key OAuth Passport
+# 5. Generate Passport OAuth keys
 php artisan passport:install
 
-# 6. Jalankan server
+# 6. Start the server
 php artisan serve
 ```
 
-API dapat diakses di `http://localhost:8000/api`.
+The API is available at `http://localhost:8000/api`.
 
-### (Opsional) Server WebSockets untuk notifikasi real-time
+### (Optional) WebSockets server for real-time notifications
 
-Atur `BROADCAST_DRIVER=pusher` dan kredensial `PUSHER_*` di `.env`, lalu jalankan:
+Set `BROADCAST_DRIVER=pusher` and the `PUSHER_*` credentials in `.env`, then run:
 
 ```bash
 php artisan websockets:serve
@@ -192,22 +192,22 @@ php artisan websockets:serve
 
 ---
 
-## Contoh Endpoint
+## Sample Endpoints
 
-| Method | Endpoint | Keterangan |
+| Method | Endpoint | Description |
 |---|---|---|
-| `POST` | `/api/token` | Login & ambil access token |
-| `GET` | `/api/penjualanheader` | Daftar penjualan (grid: filter, sort, paging) |
-| `POST` | `/api/penjualanheader` | Simpan penjualan baru (header + detail) |
-| `GET` | `/api/penjualanheader/{id}/invoice` | Data cetak invoice |
-| `GET` | `/api/penjualanheader/reportprofit` | Laporan profit penjualan |
-| `GET` | `/api/pembelianheader/cekstokproduct` | Cek stok produk sebelum pembelian |
-| `GET` | `/api/pesananfinalheader/{id}/suratpengantarbarang` | Data surat pengantar barang |
-| `GET` | `/api/pelunasanpiutangheader/getpiutang` | Daftar piutang yang belum lunas |
-| `GET` | `/api/customer/export` | Export data customer ke Excel |
-| `GET` | `/api/logtrail/header` | Riwayat audit trail |
+| `POST` | `/api/token` | Log in & obtain an access token |
+| `GET` | `/api/penjualanheader` | List sales (grid: filter, sort, paging) |
+| `POST` | `/api/penjualanheader` | Create a sale (header + details) |
+| `GET` | `/api/penjualanheader/{id}/invoice` | Invoice print data |
+| `GET` | `/api/penjualanheader/reportprofit` | Sales profit report |
+| `GET` | `/api/pembelianheader/cekstokproduct` | Check product stock before purchasing |
+| `GET` | `/api/pesananfinalheader/{id}/suratpengantarbarang` | Delivery note data |
+| `GET` | `/api/pelunasanpiutangheader/getpiutang` | Outstanding receivables |
+| `GET` | `/api/customer/export` | Export customers to Excel |
+| `GET` | `/api/logtrail/header` | Audit trail history |
 
-Semua endpoint selain `/api/token` membutuhkan header:
+All endpoints except `/api/token` require these headers:
 
 ```
 Authorization: Bearer <access_token>
@@ -216,17 +216,17 @@ Accept: application/json
 
 ---
 
-## Pengujian
+## Testing
 
 ```bash
 php artisan test
 ```
 
-Feature test berada di `tests/Feature/Api` (autentikasi, user, role, parameter, error).
+Feature tests live in `tests/Feature/Api` (authentication, users, roles, parameters, errors).
 
 ---
 
-## Pengembang
+## Author
 
 **Syarifah** — Backend Developer
 
@@ -234,4 +234,4 @@ Feature test berada di `tests/Feature/Api` (autentikasi, user, role, parameter, 
 
 ---
 
-> Repository ini dipublikasikan sebagai portofolio. Data, kredensial, dan dump database produksi tidak disertakan.
+> This repository is published as a portfolio project. Production data, credentials, and database dumps are not included.

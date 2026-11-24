@@ -1,67 +1,237 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# ERP API — Backend Sistem Distribusi & Penjualan
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+![PHP](https://img.shields.io/badge/PHP-7.3%20%7C%208.x-777BB4?logo=php&logoColor=white)
+![Laravel](https://img.shields.io/badge/Laravel-8.x-FF2D20?logo=laravel&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL%20%2F%20MariaDB-4479A1?logo=mysql&logoColor=white)
+![Passport](https://img.shields.io/badge/Auth-Laravel%20Passport-blue)
+![WebSockets](https://img.shields.io/badge/Realtime-WebSockets-green)
 
-## About Laravel
+RESTful API berbasis **Laravel 8** yang menjadi backend sebuah aplikasi **ERP (Enterprise Resource Planning)** untuk usaha distribusi/perdagangan. API ini menangani seluruh siklus bisnis: mulai dari pesanan pelanggan, pembelian ke supplier, penjualan, retur, manajemen stok dan HPP, hingga hutang-piutang dan pelaporan keuangan.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Daftar Isi
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- [Fitur Utama](#fitur-utama)
+- [Alur Bisnis](#alur-bisnis)
+- [Tech Stack](#tech-stack)
+- [Arsitektur & Struktur Folder](#arsitektur--struktur-folder)
+- [Keamanan & Hak Akses](#keamanan--hak-akses)
+- [Instalasi](#instalasi)
+- [Contoh Endpoint](#contoh-endpoint)
+- [Pengujian](#pengujian)
+- [Pengembang](#pengembang)
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Fitur Utama
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Master Data
+| Modul | Keterangan |
+|---|---|
+| Customer & Group Customer | Data pelanggan beserta pengelompokannya |
+| Supplier | Data pemasok |
+| Product, Group Product, Satuan | Katalog produk, kategori, dan satuan |
+| Karyawan & Armada | Data karyawan dan kendaraan pengiriman |
+| Bank & Alat Bayar | Rekening dan metode pembayaran |
+| Perkiraan (COA) | Chart of Accounts untuk pencatatan keuangan |
+| Owner, Parameter, Hari Libur | Konfigurasi umum sistem |
 
-## Laravel Sponsors
+### Transaksi
+- **Pesanan** — pencatatan pesanan pelanggan (header–detail).
+- **Pesanan Final & Cek Pesanan** — rekap pesanan final yang menjadi dasar pembelian dan penjualan, termasuk cetak *surat pengantar barang*.
+- **Pembelian** — pembelian barang ke supplier, termasuk cek stok produk dan transaksi belanja.
+- **Penjualan** — penjualan ke pelanggan, cetak *invoice*, dan laporan profit (ringkas maupun detail).
+- **Faktur Pembelian & Faktur Penjualan**.
+- **Retur Beli & Retur Jual** — dengan validasi qty maksimal yang boleh diretur.
+- **Penyesuaian Stok** — koreksi stok fisik.
+- **Transaksi Armada & Transaksi Belanja** — biaya operasional kendaraan dan belanja harian.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### Keuangan
+- **Hutang & Pelunasan Hutang** ke supplier.
+- **Piutang & Pelunasan Piutang** dari pelanggan.
 
-### Premium Partners
+### Persediaan
+- **Kartu Stok** — riwayat keluar-masuk barang per produk.
+- **HPP (Harga Pokok Penjualan)** — perhitungan HPP dari pembelian, penjualan, dan retur.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[CMS Max](https://www.cmsmax.com/)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-- **[Romega Software](https://romegasoftware.com)**
+### Sistem & Administrasi
+- Manajemen **User, Role, Menu, ACL/ACOS** (hak akses per role maupun per user).
+- **Log Trail** — audit trail setiap perubahan data (header & detail).
+- **Dashboard**, **Error log**, ubah & lupa password (reset via email).
+- **Running Number** — penomoran dokumen transaksi otomatis per grup/sub-grup dan periode.
+- **Export Excel & Report** di hampir setiap modul (PhpSpreadsheet).
+- **Notifikasi real-time** untuk transaksi pembelian & penjualan melalui WebSockets.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Alur Bisnis
 
-## Code of Conduct
+```
+ Pesanan ──► Pesanan Final ──┬──► Pembelian ──► Hutang ──► Pelunasan Hutang
+                             │        │
+                             │        └──► Retur Beli
+                             │
+                             └──► Penjualan ──► Piutang ──► Pelunasan Piutang
+                                      │
+                                      ├──► Invoice / Surat Pengantar Barang
+                                      └──► Retur Jual
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+ Pembelian / Penjualan / Retur / Penyesuaian Stok ──► Kartu Stok ──► HPP ──► Laporan Profit
+```
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Tech Stack
 
-## License
+| Kategori | Teknologi |
+|---|---|
+| Bahasa | PHP 7.3+ / 8.x |
+| Framework | Laravel 8 |
+| Database | MySQL / MariaDB |
+| Autentikasi | Laravel Passport (OAuth2), Laravel Sanctum |
+| Real-time | `beyondcode/laravel-websockets`, Pusher protocol |
+| Export / Laporan | `phpoffice/phpspreadsheet` |
+| Lainnya | Intervention Image, Guzzle HTTP, Doctrine DBAL, Laravel CORS |
+| Testing | PHPUnit, Paratest, Mockery, Faker |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# erp-laravelapi
+---
+
+## Arsitektur & Struktur Folder
+
+```
+erp-api/
+├── app/
+│   ├── Console/              # Kernel artisan & scheduler
+│   ├── Events/               # Event broadcast (notifikasi pembelian/penjualan, progres export)
+│   ├── Exceptions/           # Global exception handler
+│   ├── Helpers/              # Fungsi helper global (autoload via composer)
+│   ├── Http/
+│   │   ├── Controllers/Api/  # ±60 controller REST, satu per modul
+│   │   ├── Middleware/       # Authorized (cek ACL), HandleTokenExpiration, dll.
+│   │   └── Requests/         # Form Request validation (Store/Update/Destroy)
+│   ├── Mail/                 # Email reset password
+│   ├── Models/               # Eloquent model + query builder grid (filter, sort, paging)
+│   ├── Providers/            # Service provider (Auth, Broadcast, Route, dll.)
+│   ├── Rules/                # Custom validation rules
+│   ├── Services/             # RunningNumberService (penomoran dokumen)
+│   └── Traits/               # RestrictDeletion (mencegah hapus data yang sudah dipakai)
+├── config/                   # Konfigurasi Laravel + integrasi API eksternal
+├── cronjob/                  # Script terjadwal (dipanggil via Task Scheduler / cron)
+├── database/
+│   ├── migrations/           # 60+ migration skema tabel
+│   ├── factories/
+│   └── seeders/              # Seeder master data, menu, role & ACL
+├── routes/
+│   ├── api.php               # Seluruh endpoint REST API
+│   └── channels.php          # Otorisasi channel broadcasting
+├── tests/Feature/Api/        # Feature test endpoint API
+└── public/                   # Entry point aplikasi
+```
+
+### Pola yang Digunakan
+- **Header–Detail pattern** untuk dokumen transaksi (mis. `PenjualanHeader` + `PenjualanDetail`), sehingga satu dokumen dapat memiliki banyak baris item.
+- **Form Request Validation** terpisah untuk create, update, dan delete.
+- **Grid endpoint standar** di setiap modul: pencarian, filter per kolom, sorting, dan pagination di sisi server.
+- **Endpoint pendukung** yang konsisten: `/default` (nilai awal form), `/field_length` (panjang field untuk validasi di frontend), `/combo`, `/export`, `/report`.
+- **Database transaction** pada proses simpan transaksi untuk menjaga konsistensi data.
+- **Audit trail** otomatis ke tabel `logtrail` untuk setiap perubahan.
+
+---
+
+## Keamanan & Hak Akses
+
+1. **Autentikasi OAuth2** menggunakan Laravel Passport — client mendapatkan token melalui `POST /api/token`.
+2. **Middleware `auth:api`** melindungi seluruh endpoint transaksi.
+3. **Middleware `Authorized`** memeriksa izin berdasarkan kombinasi *class* (modul) dan *method* (aksi) terhadap tabel ACL milik role maupun user, lalu mengembalikan `403` bila tidak berhak.
+4. **HandleTokenExpiration** untuk menangani token yang kedaluwarsa.
+5. **RestrictDeletion** mencegah penghapusan master data yang masih direferensikan oleh transaksi.
+
+---
+
+## Instalasi
+
+### Prasyarat
+- PHP 7.3+ dengan ekstensi `pdo_mysql`, `gd`, `zip`, `mbstring`
+- Composer
+- MySQL 5.7+ / MariaDB 10.3+
+
+### Langkah
+
+```bash
+# 1. Clone repository
+git clone https://github.com/thinkabowtsya/erp-laravelapi.git
+cd erp-laravelapi
+
+# 2. Install dependency
+composer install
+
+# 3. Salin file environment lalu sesuaikan koneksi database
+cp .env.example .env
+php artisan key:generate
+
+# 4. Jalankan migrasi & seeder
+php artisan migrate --seed
+
+# 5. Generate key OAuth Passport
+php artisan passport:install
+
+# 6. Jalankan server
+php artisan serve
+```
+
+API dapat diakses di `http://localhost:8000/api`.
+
+### (Opsional) Server WebSockets untuk notifikasi real-time
+
+Atur `BROADCAST_DRIVER=pusher` dan kredensial `PUSHER_*` di `.env`, lalu jalankan:
+
+```bash
+php artisan websockets:serve
+```
+
+---
+
+## Contoh Endpoint
+
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| `POST` | `/api/token` | Login & ambil access token |
+| `GET` | `/api/penjualanheader` | Daftar penjualan (grid: filter, sort, paging) |
+| `POST` | `/api/penjualanheader` | Simpan penjualan baru (header + detail) |
+| `GET` | `/api/penjualanheader/{id}/invoice` | Data cetak invoice |
+| `GET` | `/api/penjualanheader/reportprofit` | Laporan profit penjualan |
+| `GET` | `/api/pembelianheader/cekstokproduct` | Cek stok produk sebelum pembelian |
+| `GET` | `/api/pesananfinalheader/{id}/suratpengantarbarang` | Data surat pengantar barang |
+| `GET` | `/api/pelunasanpiutangheader/getpiutang` | Daftar piutang yang belum lunas |
+| `GET` | `/api/customer/export` | Export data customer ke Excel |
+| `GET` | `/api/logtrail/header` | Riwayat audit trail |
+
+Semua endpoint selain `/api/token` membutuhkan header:
+
+```
+Authorization: Bearer <access_token>
+Accept: application/json
+```
+
+---
+
+## Pengujian
+
+```bash
+php artisan test
+```
+
+Feature test berada di `tests/Feature/Api` (autentikasi, user, role, parameter, error).
+
+---
+
+## Pengembang
+
+**Syarifah** — Backend Developer
+
+- GitHub: [@thinkabowtsya](https://github.com/thinkabowtsya)
+
+---
+
+> Repository ini dipublikasikan sebagai portofolio. Data, kredensial, dan dump database produksi tidak disertakan.
